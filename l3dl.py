@@ -65,7 +65,7 @@ def download(keys):
     if select_ and not os.path.exists(f'{cd}\\output\\{name}.mkv'):
         os.system(f'N_m3u8DL-RE.exe "{mpd_url}" --log-level ERROR --binary-merge --live-real-time-merge --mp4-real-time-decryption --key {keys} -M format=mkv --del-after-done --save-name "{name}" --save-dir "{cd}\\output" --use-shaka-packager -mt TRUE --thread-count 12')
     elif not select_ and not os.path.exists(f'{cd}\\output\\{name}.mkv'):
-        print(f'Download, decrypt, and muxing may take some time.')
+        print(f'Processing {name} | Download, decrypt, and muxing may take some time.')
         subprocess.call(f'N_m3u8DL-RE.exe "{mpd_url}" --log-level ERROR --binary-merge --live-real-time-merge --mp4-real-time-decryption --key {keys} -M format=mkv --del-after-done -ss all -sa best -sv best --save-name "{name}" --save-dir "{cd}\\output" --use-shaka-packager -mt TRUE --thread-count 12')
     else:
         print(f'{name} already on output folder. Skipped.')
@@ -75,9 +75,9 @@ def start_process():
     pssh = get_pssh(mpd_url)
     print(f'\nPSSH: {pssh}')
     cached = find_pssh(pssh)
-    print(f'Cached keys found for {name}: {fetch_key(pssh)}')
     if cached:
         keys = fetch_key(pssh)
+        print(f'Cached key found: {fetch_key(pssh)}')
         if not keys_:
             download(keys)
     else:
@@ -89,7 +89,6 @@ def start_process():
                     print(f'Keys: {key}')
                 keys = key
                 insert_table(pssh, keys, lic_url, mpd_url)
-                #consider multi-keys scenario, pssh to kid?
                 if keys_:
                     print(f'Done fetching keys for {name}')
                 else:
@@ -144,4 +143,4 @@ if batch_mode:
 else:
     start_process()
 
-#TODO: support for multi-keys usecase
+#TODO: support for multi-keys usecase, add pssh to kid?
