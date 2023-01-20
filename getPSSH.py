@@ -1,4 +1,7 @@
-import requests, xmltodict, json
+import requests
+import xmltodict
+import json
+
 
 def get_pssh(mpd_url):
     pssh = ''
@@ -9,9 +12,10 @@ def get_pssh(mpd_url):
         mpd = json.loads(json.dumps(xml))
         periods = mpd['MPD']['Period']
     except Exception as e:
-        pssh = input(f'\nUnable to find PSSH in MPD: {e}. \nEdit getPSSH.py or enter PSSH manually: ')
+        pssh = input(
+            f"\nUnable to find PSSH in MPD: {e}. \n\nEnter PSSH manually or 'skip': ")
         return pssh
-    try: 
+    try:
         if isinstance(periods, list):
             for idx, period in enumerate(periods):
                 if isinstance(period['AdaptationSet'], list):
@@ -22,26 +26,40 @@ def get_pssh(mpd_url):
                                     if t['@schemeIdUri'].lower() == "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed":
                                         pssh = t["cenc:pssh"]
                             except Exception:
-                                pass   
+                                pass
                 else:
                     if period['AdaptationSet']['@mimeType'] == 'video/mp4':
-                            try:
-                                for t in period['AdaptationSet']['ContentProtection']:
-                                    if t['@schemeIdUri'].lower() == "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed":
-                                        pssh = t["cenc:pssh"]
-                            except Exception:
-                                pass   
-        else:
-            for ad_set in periods['AdaptationSet']:
-                    if ad_set['@mimeType'] == 'video/mp4':
                         try:
-                            for t in ad_set['ContentProtection']:
+                            for t in period['AdaptationSet']['ContentProtection']:
                                 if t['@schemeIdUri'].lower() == "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed":
                                     pssh = t["cenc:pssh"]
                         except Exception:
-                            pass   
+                            pass
+        else:
+            for ad_set in periods['AdaptationSet']:
+                if ad_set['@mimeType'] == 'video/mp4':
+                    try:
+                        for t in ad_set['ContentProtection']:
+                            if t['@schemeIdUri'].lower() == "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed":
+                                pssh = t["cenc:pssh"]
+                    except Exception:
+                        pass
     except Exception:
-        pass                      
+        try:  # for IW
+            for ad_set in periods['AdaptationSet']:
+                if ad_set['@contentType'] == 'video':
+                    try:
+                        for t in ad_set['ContentProtection']:
+                            if t['@schemeIdUri'].lower() == "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed":
+                                pssh = t["cenc:pssh"]
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+
     if pssh == '':
-        pssh = input('Unable to find PSSH in mpd. Edit getPSSH.py or enter PSSH manually: ')
-    return pssh
+        pssh = input(
+            f"\nUnable to find PSSH in MPD. Enter PSSH manually or 'skip': ")
+        return pssh
+    else:
+        return pssh
