@@ -12,7 +12,7 @@ r3n@RSG                                  0.1
 
 This script was modified from the base L3 module and named as such because it depends on N_m3u8DL-RE instead of yt-dlp/aria2c/ffmpeg/mkvmerge. This project is more of vinebatch's successor that is faster and better.
 
-Since most big VODs have their dedicated downloaders, this is aimed for smaller sites that have no custom payload needed. This is initial release and will likely contain bugs that will either be fixed in the future or not.
+Since most big VODs have their dedicated downloaders, this is aimed for smaller sites that have no custom payload needed but you can modify it to your specific use case. I have already made multiple custom downloaders from this base script. This is initial release and will likely contain bugs that will either be fixed in the future or not.
 
 Requirements:
 - These should be on your PATH (use latest): mkvtoolnix/mkvmerge, shaka-packager.exe
